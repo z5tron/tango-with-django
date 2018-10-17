@@ -73,4 +73,11 @@ Models
 - `c = Category.objects.get_or_create(name=name)[0]`
 - add `class CateoryAdmin(admin.ModelAdmin)` into app/admin.py, and set `fields`, `list_display`.
 - add `class CategoryInline(admin.StackedInline)`, `class CategoryInline(admin.TabularInline)` for `PageAdmin.inlines = [ CategoryInline ]`
+- add `slug=SlugField(default="")` to `Category` and override `save(self, *args, **kwargs)`, make use of `from django.template.defaultfilters import slugify`
+- instead of url `r'^category/(?P<category_name_slug>[\w\-]+)/$'`, Django2 prefers `'category/<slug:category_name_slug>/'`
 
+
+Fun with Forms
+-----------------
+
+- add forms.py, use `django.forms` for `class CategoryForm(forms.ModelForm)`
