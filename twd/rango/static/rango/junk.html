@@ -1,0 +1,52 @@
+<h1 id="tango-with-django">Tango With Django</h1>
+<p><a href="http://www.tangowithdjango.com/book17/">How To Tango With Django 1.7</a></p>
+<pre><code>$ django-admin startproject twd
+$ python manage.py migrate
+$ python manage.py runserver 8001
+$ python manage.py startapp rango</code></pre>
+<p>add 'rango' into <code>settings.py:INSTALLED_APP</code>.</p>
+<p>map the URL. Two parts:</p>
+<ul>
+<li>The project: <code>twd/urls.py</code>, <code>path('rango/', include('rango.urls'))</code></li>
+<li><p>The app: <code>rango/urls.py</code>, e.g. <code>path('', views.index, name=&quot;index&quot;)</code></p>
+<p>from django.urls import path</p>
+<p>from . import views</p>
+<p>urlpatterns = [ path('', views.index, name='index'),]</p></li>
+<li><p>use <code>django.urls.reverse</code> map between name and URL.</p></li>
+</ul>
+<h2 id="templates-and-static-media">Templates and Static Media</h2>
+<ul>
+<li>django 1.7: <code>&lt;workspace&gt;/twd/templates/rango/</code></li>
+<li>django 2.1: <code>&lt;workspace&gt;/twd/rango/templates/rango/</code> when <code>APP_DIRS=True</code> in <code>TEMPLATES</code> (settings.py)</li>
+<li>make sure <code>django.contrib.staticfiles</code> in <code>INSTALLED_APPS</code>, <code>STATIC_URL='/static/</code>, per-app static is <code>&lt;workspace&gt;/twd/rango/static/</code></li>
+<li><p>add to <code>settings.py</code></p>
+STATICFILES_FINDERS = [ 'django.contrib.staticfiles.finders.AppDirectoriesFinder',]</li>
+<li><p>set <code>STATIC_ROOT=&quot;/var/www/example.com/static/</code>, and <code>python manage.py collectstatic</code> to copy files to <code>STATIC_ROOT</code> (served by other webserver) needs more details on what the full URL will be</p></li>
+<li><p><code>{% load static %}</code> and <code>{% load staticfiles %}</code> (the later knows external storage ? like Amazon S3 ?) they allow us to call static template tag as <code>{% static &quot;rango/junk.html&quot; %}</code></p></li>
+</ul>
+<h2 id="models">Models</h2>
+<ul>
+<li><code>category = models.ForeignKey(Category, on_delete=models.CASCADE)</code></li>
+<li>no need <code>id</code> field, will be created by Django</li>
+<li>Create models then <code>python manage.py makemigrations</code></li>
+<li><code>python manage.py migrate</code></li>
+<li>Whenever you add to existing models, you will have to repeat this process running python manage.py makemigrations <app_name>, and then python manage.py migrate</li>
+<li><p><code>python manage.py shell</code></p>
+<pre><code># Import the Category model from the Rango application
+&gt;&gt;&gt; from rango.models import Category
+
+# Show all the current categories
+&gt;&gt;&gt; print Category.objects.all()
+[] # Returns an empty list (no categories have been defined!)
+
+# Create a new category object, and save it to the database.
+&gt;&gt;&gt; c = Category(name=&quot;Test&quot;)
+&gt;&gt;&gt; c.save()
+
+# Now list all the category objects stored once more.
+&gt;&gt;&gt; print Category.objects.all()
+[&lt;Category: test&gt;] # We now have a category called &#39;test&#39; saved in the database!
+
+# Quit the Django shell.
+&gt;&gt;&gt; quit()</code></pre></li>
+</ul>
